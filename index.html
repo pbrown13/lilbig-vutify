@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Vuetify CDN Boilerplate</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Poppins:100,300,400,500,700,900"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css"
+      rel="stylesheet"
+    />
+    <!-- Optional bootstrap CDN -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    />
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  </head>
+  <body>
+    <div id="app">
+      <v-app :class="{'bg-dark': nightMode, 'bg-light': !nightMode}">
+        <v-card style="border-radius: 0px;">
+          <v-app-bar color="blue" dark>
+            <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+            <v-btn
+              class="ma-2"
+              outlined
+              fab
+              color="white"
+              @click="nightMode = !nightMode"
+            >
+              <v-icon v-if="!nightMode">mdi-brightness-2</v-icon>
+              <v-icon v-if="nightMode">mdi-brightness-5</v-icon>
+            </v-btn>
+
+            <v-toolbar-title
+              :class="{'text-white': nightMode, 'text-black': !nightMode}"
+              >{{title}}</v-toolbar-title
+            >
+            <v-spacer />
+          </v-app-bar>
+        </v-card>
+        <v-navigation-drawer
+          v-model="drawer"
+          absolute
+          temporary
+          :class="{'bg-dark': nightMode, 'bg-light': !nightMode}"
+        >
+          <v-row>
+            <v-col>
+              <v-container
+                :class="{'text-white': nightMode, 'text-black': !nightMode}"
+              >
+                <img
+                  src="https://s3.amazonaws.com/appforest_uf/f1611627597940x381168473410042000/brain.png"
+                  alt=""
+                  class="pb-1"
+                  height="15%"
+                  width="15%"
+                />
+                | lilBig(<span style="color: #5CC5C5;">Data</span>)
+              </v-container>
+            </v-col>
+          </v-row>
+          <v-divider></v-divider>
+
+          <v-list nav dense>
+            <v-list-item-group
+              v-model="group"
+              active-class="deep-purple--text text--accent-4"
+            >
+              <v-list-item v-for="(n, index) in navigation" :key="index">
+                <v-list-item-icon>
+                  <v-icon
+                    :class="{'text-white': nightMode, 'text-black': !nightMode}"
+                    >{{n.icon}}</v-icon
+                  >
+                </v-list-item-icon>
+                <v-list-item-title
+                  @click="link(n.link)"
+                  :class="{'text-white': nightMode, 'text-black': !nightMode}"
+                  >{{n.name}}</v-list-item-title
+                >
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+        </v-navigation-drawer>
+
+        <v-main>
+          <v-container>
+            <v-spacer />
+
+            <v-row>
+              <v-col v-for="(i, index) in brands" :key="index">
+                <v-card
+                  class="mx-auto"
+                  max-width="275"
+                  style="padding: 30px;"
+                  :class="{'bg-dark': nightMode, 'bg-light': !nightMode}"
+                >
+                  <v-img :src="i.logo" height="225px"></v-img>
+
+                  <v-card-title
+                    :class="{'text-white': nightMode, 'text-black': !nightMode}"
+                  >
+                    {{i.name}}
+                  </v-card-title>
+                  <v-card-subtitle
+                    :class="{'text-white': nightMode, 'text-black': !nightMode}"
+                  >
+                    {{i.type}}
+                  </v-card-subtitle>
+
+                  <v-card-actions>
+                    <v-btn color="blue lighten-2" text @click="link(i.link)">
+                      Explore
+                    </v-btn>
+
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                      icon
+                      @click="brands[index].show = !brands[index].show"
+                    >
+                      <v-icon
+                        :class="{'text-white': nightMode, 'text-black': !nightMode}"
+                        >{{ show ? 'mdi-chevron-up' : 'mdi-chevron-down'
+                        }}</v-icon
+                      >
+                    </v-btn>
+                  </v-card-actions>
+
+                  <v-expand-transition>
+                    <div v-show="brands[index].show">
+                      <v-divider></v-divider>
+
+                      <v-card-text
+                        :class="{'text-white': nightMode, 'text-black': !nightMode}"
+                      >
+                        {{i.tagline}}
+                      </v-card-text>
+                    </div>
+                  </v-expand-transition>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-main>
+        <v-dialog transition="dialog-bottom-transition" max-width="600">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn color="primary" v-bind="attrs" v-on="on"
+              >Get a lil inspiration</v-btn
+            >
+          </template>
+          <template v-slot:default="dialog">
+            <v-card v-if="!loading">
+              <v-toolbar color="primary" dark
+                >Your daily dose of inspiration.</v-toolbar
+              >
+              <img :src="inspo" height="100%" width="100%" />
+              <v-card-actions class="justify-space-between">
+                <v-btn text @click="dialog.value = false">Close</v-btn>
+              </v-card-actions>
+            </v-card>
+          </template>
+        </v-dialog>
+      </v-app>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
